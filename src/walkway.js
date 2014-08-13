@@ -30,6 +30,16 @@
   var defaults = {};
   var pathSelector = ' path';
 
+  function _createSelector(selector) {
+    var supported = ['path'];
+    selector = supported.reduce(function(prev, curr){
+      return prev + selector + ' ' + current + ', ';
+    }, '');
+    // chop the last , from the string
+    console.log(selector.splice(-1, 2));
+    return selector.splice(-1, 2);
+  }
+
   function LineAnimate(opts) {
     if (!(this instanceof LineAnimate))
       return new LineAnimate(opts);
@@ -46,11 +56,9 @@
       n.el.style.strokeDasharray = n.length + ' ' + n.length;
       n.el.style.strokeDashoffset = n.length;
     });
-    console.log('Set initial styles');
   }
 
   LineAnimate.prototype.getPaths = function() {
-    console.log('Retreiving all paths');
     var els = document.querySelectorAll(this.selector + pathSelector);
     els = Array.prototype.slice.call(els);
     return els.map(function(path) {
@@ -62,20 +70,15 @@
     var counter = this.paths.length;
     var path;
 
-    if (counter === 0) {
-      console.log('Ending the animation');
+    if (counter === 0)
       return window.cancelAnimationFrame(this.id);
-    }
 
     while (counter--) {
       path = this.paths[counter];
       var done = path.update();
-      // if this animation is done then we need to remove it from the array
-      // I've put this in here at the start so we can add randomised finish
-      // intervals later at some point
-      if (done) {
+
+      if (done)
         this.paths.splice(counter, 1);
-      }
     }
 
     this.id = window.requestAnimationFrame(this.draw.bind(this));
@@ -101,10 +104,11 @@
       return true;
     } else {
       this.el.style.strokeDashoffset = Math.floor(this.length * (1 - progress));
-      console.log('offset', this.el.style.strokeDashoffset);
       return false;
     }
   }
+
+
 
   this.LineAnimate = LineAnimate;
 
