@@ -5,14 +5,14 @@ and decided to create a small library to re-create them.
 
 ## How to use
 
-Create a new ```Walkway`` instance with a supplied options object.
+Create a new ```Walkway``` instance with a supplied options object.
 When you want to start animating call ```.draw``` on the returned instance
 providing an optional callback that will be called when drawing is complete.
 
 ``` js
 // Create a new instance
-var svg = new Walkway( options );
-// Draw when ready providing an optional callback
+var svg = new Walkway(options);
+// Draw when ready, providing an optional callback
 svg.draw(callback)
 
 var svg = new Walkway({ selector: '#tester'});
@@ -36,10 +36,8 @@ svg.draw(function () {
 
 ### Options
 
-There are three different options you can supply to the constructor.
-
 - **selector** (*mandatory*) - The selector of the parent element (usually will be a specific svg element)
-- **duration** - Time the animation should run for in ms. Default is 400.
+- **duration** - Time the animation should run for, in ms. Default is 400.
 - **easing** - Name of the easing function used for drawing. Default is 'easeInOutCubic'. You can also supply your own function that will be passed the progress and should return a value in the range of [0, 1];
 
 ### Easing
