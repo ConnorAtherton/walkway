@@ -1,5 +1,2 @@
-- Test in browser
-- Add user default options object (only default is the selector)
-- Add easing functions [from here](https://gist.github.com/gre/1650294)
 - Create .coffee version
 - Add gulp for jshint etc
