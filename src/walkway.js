@@ -67,7 +67,7 @@
   // @private
   //
   function _createSelector(selector) {
-    var supported = ['path'];
+    var supported = ['path', 'line'];
     newSelector = supported.reduce(function(prev, curr){
       return prev + selector + ' ' + curr + ', '
     }, '');
@@ -120,8 +120,12 @@
     var selector = _createSelector(this.selector);
     var els = document.querySelectorAll(selector);
     els = Array.prototype.slice.call(els);
-    return els.map(function(path) {
-      return new Path(path, self.duration, self.easing);
+    return els.map(function(el) {
+      if(el.tagName === 'path') {
+        return new Path(el, self.duration, self.easing);
+      } else if (el.tagName === 'line') {
+        return new Line(el, self.duration, self.easing);
+      }
     });
   }
 
@@ -133,6 +137,8 @@
     this.paths.forEach(function(n) {
       n.el.style.strokeDasharray = n.length + ' ' + n.length;
       n.el.style.strokeDashoffset = n.length;
+      n.el.style.stroke = 'black';
+      n.el.style.fill = 'transparent';
     });
   }
 
@@ -182,6 +188,7 @@
   // @returns {boolean} Returns true if the path animation is finished, false otherwise
   //
   Path.prototype.update = function() {
+    console.log(this);
     if (!this.animationStarted) {
       this.animationStart = Date.now();
       this.animationStarted = true;
@@ -192,6 +199,48 @@
 
     this.el.style.strokeDashoffset = Math.floor(this.length * (1 - progress));
     return false;
+  }
+
+  //
+  //
+  //
+  //
+  function Line(line, duration, easing) {
+    this.el = line;
+    this.length = getLineLength(line);
+    this.duration = duration;
+    this.easing = easing;
+    this.animationStart = null;
+    this.animationStarted = false;
+  }
+
+  Line.prototype.update = function() {
+    if (!this.animationStarted) {
+      this.animationStart = Date.now();
+      this.animationStarted = true;
+    }
+
+    var progress = this.easing((Date.now() - this.animationStart) / this.duration);
+    if (progress >= 1) return true;
+
+    this.el.style.strokeDashoffset = Math.floor(this.length * (1 - progress));
+    return false;
+  };
+
+  //
+  //
+  //
+  //
+  function getLineLength(line) {
+    var x1 = line.getAttribute('x1');
+    var x2 = line.getAttribute('x2');
+    var y1 = line.getAttribute('y1');
+    var y2 = line.getAttribute('y2');
+    // if (x2 > x1) var tmp = x1; x1 = x2; x2 = tmp;
+    // if (y2 > y1) var tmp = y1; y1 = y2; y2 = tmp;
+    // console.log('line', x1, x2, y1, y2);
+
+    return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
   }
 
   // Attach it the global window object
