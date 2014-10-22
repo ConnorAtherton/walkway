@@ -16,11 +16,11 @@ var svg = new Walkway(options);
 svg.draw(callback);
 
 // Options passed in as an object, see options below.
-var svg = new Walkway({ selector: '#tester'});
+var svg = new Walkway({ selector: '#test'});
 
 // Overwriting defaults
 var svg = new Walkway({
-  selector: '#tester',
+  selector: '#test',
   duration: '2000',
   // can pass in a function or a string like 'easeOutQuint'
   easing: function (t) {

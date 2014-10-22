@@ -1,4 +1,14 @@
+/*
+ * Walkway.js
+ *
+ * Copyright 2014, Connor Atherton - http://connoratherton.com/
+ * Released under the MIT Licence
+ * http://opensource.org/licenses/MIT
+ *
+ * Github:  http://github.com/ConnorAtherton/Walkway.js/
+ */
 (function(window) {
+  'use strict'
 
   /*
    * Shim for requestAnimationFrame on older browsers
