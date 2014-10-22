@@ -13,9 +13,12 @@ providing an optional callback that will be called when drawing is complete.
 // Create a new instance
 var svg = new Walkway(options);
 // Draw when ready, providing an optional callback
-svg.draw(callback)
+svg.draw(callback);
 
+// Options passed in as an object, see options below.
 var svg = new Walkway({ selector: '#tester'});
+
+// Overwriting defaults
 var svg = new Walkway({
   selector: '#tester',
   duration: '2000',
@@ -24,13 +27,15 @@ var svg = new Walkway({
     return t * t;
   }
 });
-svg.draw()
+
+svg.draw();
 
 // If you don't want to change the default options you can
 // also supply the constructor with a selector string.
 var svg = new Walkway('#test');
+
 svg.draw(function () {
-  console.log('Animation finished')
+  console.log('Animation finished');
 });
 ```
 
@@ -46,5 +51,7 @@ All credit for the built-in easing functions go to [gre](https://github.com/gre)
 
 ## Things to do
 
-Currently, this only works on ```path``` elements inside of svg since they are the only element to support ```getTotalLength()```. Walkway
-should also work with ```line``` and ```polyline``` elements.
+Currently, this only works on ```path``` and ```line``` elements. Walkway
+will also work with ```polyline``` elements when I have a few hours free.
+
+### Demo coming soon

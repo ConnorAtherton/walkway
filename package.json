@@ -1,0 +1,31 @@
+{
+  "name": "Walkway",
+  "version": "0.0.1",
+  "description": "An easy way to animate simple svg elements.",
+  "main": "/src/walkway.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ConnorAtherton/walkway.git"
+  },
+  "keywords": [
+    "svg",
+    "animate"
+  ],
+  "author": "Connor Atherton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ConnorAtherton/walkway/issues"
+  },
+  "homepage": "https://github.com/ConnorAtherton/walkway",
+  "dependencies": {
+    "gulp": "~3.8.8",
+    "gulp-load-plugins": "~0.7.0",
+    "gulp-uglify": "~1.0.1",
+    "jshint-stylish": "~1.0.0",
+    "gulp-jshint": "~1.8.5",
+    "gulp-rename": "~1.2.0"
+  }
+}
