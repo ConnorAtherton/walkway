@@ -5,9 +5,9 @@
  * Released under the MIT Licence
  * http://opensource.org/licenses/MIT
  *
- * Github:  http://github.com/ConnorAtherton/Walkway.js/
+ * Github:  http://github.com/ConnorAtherton/Walkway
  */
-(function(window) {
+;(function(window) {
   'use strict'
 
   /*
