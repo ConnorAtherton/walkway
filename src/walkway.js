@@ -85,11 +85,11 @@
    * @param {string} selector The selector of the parent element
    * @returns {string} the complete selector
    * @private
-  */
+   */
 
   function _createSelector(selector) {
     var supported = ['path', 'line'];
-    newSelector = supported.reduce(function(prev, curr){
+    var newSelector = supported.reduce(function(prev, curr){
       return prev + selector + ' ' + curr + ', ';
     }, '');
     // chop the last , from the string
@@ -103,7 +103,7 @@
    *
    * @param {object} opts the configuration objects for the instance.
    * @returns {walkway}
-  */
+   */
 
   function Walkway(opts) {
     if (!(this instanceof Walkway))
@@ -129,7 +129,7 @@
    *
    * @param {string} message the message to be displayed
    * @returns {void}
-  */
+   */
 
   Walkway.prototype.error = function(message) {
     console.log('Walkway error: ' + message);
@@ -139,7 +139,7 @@
    * Uses a pre-build selector to find and store elements to animate
    *
    * @returns {array} of Path instances
-  */
+   */
 
   Walkway.prototype.getPaths = function() {
     var self = this;
@@ -160,7 +160,7 @@
    * Sets initial styles on all elements to be animated
    *
    * @returns {void}
-  */
+   */
 
   Walkway.prototype.setInitialStyles = function() {
     this.paths.forEach(function(n) {
@@ -177,7 +177,7 @@
    * from the array. Once the array is empty the animation is stopped.
    *
    * @returns {void}
-  */
+   */
 
   Walkway.prototype.draw = function() {
     var counter = this.paths.length;
@@ -204,7 +204,7 @@
    * @param {string} duration how long the animation should take to complete
    * @param {string} easing the type of easing used - default is easeInOutCubic.
    * @returns {Path}
-  */
+   */
 
   function Path(path, duration, easing) {
     this.el = path;
@@ -219,7 +219,7 @@
    * Updates path style until the animation is complete
    *
    * @returns {boolean} Returns true if the path animation is finished, false otherwise
-  */
+   */
 
   Path.prototype.update = function() {
     if (!this.animationStarted) {
@@ -241,7 +241,7 @@
    * @param {string} duration how long the animation should take to complete
    * @param {string} easing the type of easing used - default is easeInOutCubic.
    * @returns {line}
-  */
+   */
 
   function Line(line, duration, easing) {
     this.el = line;
@@ -256,7 +256,7 @@
    * Updates line style until the animation is complete
    *
    * @returns {boolean} Returns true if the line animation is finished, false otherwise
-  */
+   */
 
   Line.prototype.update = function() {
     if (!this.animationStarted) {
@@ -276,7 +276,7 @@
    *
    * @param {node} line The line element to calculate length of 
    * @returns {Number} Length of the line
-  */
+   */
 
   function getLineLength(line) {
     var x1 = line.getAttribute('x1');
