@@ -289,6 +289,6 @@
   }
 
   // Attach it the global window object
-  this.Walkway = Walkway;
+  window.Walkway = Walkway;
 
 })(this);
