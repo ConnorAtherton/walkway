@@ -166,8 +166,6 @@
     this.paths.forEach(function(n) {
       n.el.style.strokeDasharray = n.length + ' ' + n.length;
       n.el.style.strokeDashoffset = n.length;
-      n.el.style.stroke = 'black';
-      n.el.style.fill = 'transparent';
     });
   };
 
