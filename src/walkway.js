@@ -174,12 +174,16 @@
    * @returns {void}
    */
 
-  Walkway.prototype.draw = function() {
+  Walkway.prototype.draw = function(callback) {
     var counter = this.paths.length;
     var path;
 
-    if (counter === 0)
+    if (counter === 0) {
+      if (callback && typeof(callback) === 'function') {
+        callback();
+      }
       return window.cancelAnimationFrame(this.id);
+    }
 
     while (counter--) {
       path = this.paths[counter];
@@ -189,7 +193,7 @@
         this.paths.splice(counter, 1);
     }
 
-    this.id = window.requestAnimationFrame(this.draw.bind(this));
+    this.id = window.requestAnimationFrame(this.draw.bind(this, callback));
   };
 
   /*
