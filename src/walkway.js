@@ -8,18 +8,15 @@
  * Github:  http://github.com/ConnorAtherton/Walkway
  */
 ;(function(window) {
-  'use strict'
+  'use strict';
 
   /*
    * Shim for requestAnimationFrame on older browsers
    */
 
   var lastTime = 0;
-  var vendors = ['ms', 'moz', 'webkit', 'o'];
-  for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
-  }
+  window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
   if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = function(callback, element) {
@@ -272,7 +269,7 @@
   /*
    * Calculates the length a line using pythagoras theorem
    *
-   * @param {node} line The line element to calculate length of 
+   * @param {node} line The line element to calculate length of
    * @returns {Number} Length of the line
    */
 
