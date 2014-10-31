@@ -8,7 +8,7 @@
  * Github:  http://github.com/ConnorAtherton/Walkway
  */
 ;(function(window) {
-  'use strict'
+  'use strict';
 
   /*
    * Shim for requestAnimationFrame on older browsers
