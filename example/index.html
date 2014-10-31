@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Walkway.js Example</title>
+  <script src="../walkway.min.js"></script>
+</head>
+<body>
+<svg width="120" height="120" id="triangle" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+  <g>
+    <title>triangle</title>
+    <path stroke-width="2" stroke="#000000" fill="#DDDDDD" d="m6,106l50,-100l50,100l-100,0z" />
+  </g>
+</svg>
+<svg width="105" height="105" id="diamond" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+  <g>
+    <title>Layer 1</title>
+    <path d="m5,55l50,-50l50,50l-50,50l-50,-50z" fill="none" stroke="#000000" stroke-width="2" fill="#000000"/>
+  </g>
+</svg>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Overwriting defaults
+  var svg = new Walkway('#triangle');
+
+  svg.draw(function() {
+    console.dir('done triangle!');
+  });
+
+  var svg2 = new Walkway({
+    selector: '#diamond',
+    duration: '5000',
+    // linear easing
+    easing: 'linear'
+  });
+
+  svg2.draw(function() {
+    console.dir('done diamond!');
+  });
+});
+</script>
+</body>
+</html>
