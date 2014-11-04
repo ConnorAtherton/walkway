@@ -7,7 +7,22 @@
  *
  * Github:  http://github.com/ConnorAtherton/Walkway
  */
-;(function(window) {
+
+// Export Walkway depending on environment (AMD, CommonJS or Browser global)
+;(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['exports'], function (exports) {
+      factory(root);
+    });
+  } else if (typeof exports === 'object') {
+    // CommonJS
+    factory(exports);
+  } else {
+    // Browser globals
+    factory(root);
+  }
+}(this, function (exports) {
   'use strict';
 
   /*
@@ -287,7 +302,6 @@
     return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
   }
 
-  // Attach it the global window object
-  window.Walkway = Walkway;
+  exports.Walkway = Walkway;
+}));
 
-})(this);
