@@ -242,7 +242,9 @@
     }
 
     var progress = this.easing((Date.now() - this.animationStart) / this.duration);
-    this.el.style.strokeDashoffset = Math.ceil(this.length * (1 - progress));
+    var value = Math.ceil(this.length * (1 - progress));
+    this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
+
     return progress >= 1 ? true : false;
   };
 
@@ -277,7 +279,9 @@
     }
 
     var progress = this.easing((Date.now() - this.animationStart) / this.duration);
-    this.el.style.strokeDashoffset = Math.ceil(this.length * (1 - progress));
+    var value = Math.ceil(this.length * (1 - progress));
+    this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
+
     return progress >= 1 ? true : false;
   };
 
