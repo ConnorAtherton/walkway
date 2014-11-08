@@ -1,7 +1,7 @@
 # Walkway
 
 I loved the animations [for the polygon ps4 review](http://www.polygon.com/a/ps4-review) a few months back
-and decided to create a small library to re-create them.
+and decided to create a small library to re-create them ([simple demo](http://htmlpreview.github.io/?https://github.com/ConnorAtherton/walkway/blob/master/example/index.html)).
 
 ## How to use
 
