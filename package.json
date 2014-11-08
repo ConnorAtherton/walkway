@@ -1,5 +1,5 @@
 {
-  "name": "Walkway",
+  "name": "walkway.js",
   "version": "0.0.1",
   "description": "An easy way to animate simple svg elements.",
   "main": "/src/walkway.js",

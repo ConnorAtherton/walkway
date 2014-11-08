@@ -3,6 +3,22 @@
 I loved the animations [for the polygon ps4 review](http://www.polygon.com/a/ps4-review) a few months back
 and decided to create a small library to re-create them ([simple demo](http://htmlpreview.github.io/?https://github.com/ConnorAtherton/walkway/blob/master/example/index.html)).
 
+## Download
+#### Bower
+```
+bower install walkway.js
+```
+
+#### npm
+```
+npm install walkway.js
+```
+
+#### CDN
+```
+http://cdn.jsdelivr.net/walkway/0.0.1/walkway.min.js
+```
+
 ## How to use
 
 Create a new ```Walkway``` instance with a supplied options object.
@@ -34,7 +50,7 @@ svg.draw();
 // also supply the constructor with a selector string.
 var svg = new Walkway('#test');
 
-svg.draw(function () {
+svg.draw(function() {
   console.log('Animation finished');
 });
 ```
@@ -49,9 +65,6 @@ svg.draw(function () {
 
 All credit for the built-in easing functions go to [gre](https://github.com/gre) from [this gist](https://gist.github.com/gre/1650294).
 
-## Things to do
-
-Currently, this only works on ```path``` and ```line``` elements. Walkway
-will also work with ```polyline``` elements when I have a few hours free.
-
-### Demo coming soon
+### Demo
+View the example link provided near the top of this README or see it in action on my
+[website](http://www.connoratherton.com/walkway).
