@@ -241,11 +241,9 @@
       this.animationStarted = true;
     }
 
-    var progress = this.easing(Math.ceil(Date.now() - this.animationStart) / this.duration));
-    if (progress >= 1) return true;
-
+    var progress = this.easing((Date.now() - this.animationStart) / this.duration);
     this.el.style.strokeDashoffset = Math.ceil(this.length * (1 - progress));
-    return false;
+    return progress >= 1 ? true : false;
   };
 
   /*
@@ -281,7 +279,7 @@
     var progress = this.easing((Date.now() - this.animationStart) / this.duration);
     if (progress >= 1) return true;
 
-    this.el.style.strokeDashoffset = Math.floor(this.length * (1 - progress));
+    this.el.style.strokeDashoffset = Math.ceil(this.length * (1 - progress));
     return false;
   };
 
