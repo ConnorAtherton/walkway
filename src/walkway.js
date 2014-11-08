@@ -277,10 +277,8 @@
     }
 
     var progress = this.easing((Date.now() - this.animationStart) / this.duration);
-    if (progress >= 1) return true;
-
     this.el.style.strokeDashoffset = Math.ceil(this.length * (1 - progress));
-    return false;
+    return progress >= 1 ? true : false;
   };
 
   /*
