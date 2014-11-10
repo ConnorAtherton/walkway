@@ -65,6 +65,24 @@ svg.draw(function() {
 
 All credit for the built-in easing functions go to [gre](https://github.com/gre) from [this gist](https://gist.github.com/gre/1650294).
 
+### Gotchas
+
+Sometimes when exporting from a program like Illustrator the path and line elements have no stroke style attached to them. This results in confusion when
+Walkway starts the animation and nothing shows up. Just be sure to add base styles (shown below) that can be overwritten inline if needed.
+
+```sass
+svg {
+  path, line {
+    stroke: #fff;
+    stroke-width: 2px;
+  }
+
+  path {
+    fill: transparent;
+  }
+}
+```
+
 ### Demo
 View the example link provided near the top of this README or see it in action on my
 [website](http://www.connoratherton.com/walkway).
