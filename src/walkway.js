@@ -9,20 +9,18 @@
  */
 
 // Export Walkway depending on environment (AMD, CommonJS or Browser global)
-;(function (root, factory) {
+;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['exports'], function (exports) {
-      factory(root);
-    });
+    define(factory);
   } else if (typeof exports === 'object') {
     // CommonJS
-    factory(exports);
+    module.exports = factory();
   } else {
     // Browser globals
-    factory(root);
+    root.Walkway = factory();
   }
-}(this, function (exports) {
+}(this, function factory(exports) {
   'use strict';
 
   /*
@@ -302,6 +300,6 @@
     return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
   }
 
-  exports.Walkway = Walkway;
+  return Walkway;
 }));
 
