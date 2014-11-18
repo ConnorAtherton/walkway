@@ -88,7 +88,7 @@
 
   /*
    * Creates a selector used to select all element to animate
-   * Currently only supports *path* and *line* svg elements
+   * Currently only supports *path*, *line*, and *polyline* svg elements
    *
    * TODO: In the future support more svg elements
    *
@@ -98,7 +98,7 @@
    */
 
   function _createSelector(selector) {
-    var supported = ['path', 'line'];
+    var supported = ['path', 'line', 'polyline'];
     var newSelector = supported.reduce(function(prev, curr){
       return prev + selector + ' ' + curr + ', ';
     }, '');
@@ -162,6 +162,8 @@
         return new Path(el, self.duration, self.easing);
       } else if (el.tagName === 'line') {
         return new Line(el, self.duration, self.easing);
+      } else if(el.tagName === 'polyline'){
+        return new Polyline(el, self.duration, self.easing);
       }
     });
   };
@@ -264,6 +266,8 @@
     this.animationStarted = false;
   }
 
+
+
   /*
    * Updates line style until the animation is complete
    *
@@ -284,6 +288,57 @@
   };
 
   /*
+   * Constructor for new Polyline instance
+   *
+   * @param {node} polyline actual dom node of the path
+   * @param {string} duration how long the animation should take to complete
+   * @param {string} easing the type of easing used - default is easeInOutCubic.
+   * @returns {polyline}
+   */
+   function Polyline(polyline, duration, easing){
+    this.el = polyline;
+    this.length = getPolylineLength(polyline);
+    this.duration = duration;
+    this.easing = easing;
+    this.animationStart = null;
+    this.animationStarted = false;
+  }
+    /*
+   * Updates polyline style until the animation is complete
+   *
+   * @returns {boolean} Returns true if the line animation is finished, false otherwise
+   */
+  Polyline.prototype.update = function(){
+    if (!this.animationStarted) {
+      this.animationStart = Date.now();
+      this.animationStarted = true;
+    }
+    var progress = this.easing((Date.now() - this.animationStart) / this.duration);
+    var value = Math.ceil(this.length * (1 - progress));
+    this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
+
+    return progress >= 1 ? true : false;
+  }
+
+ /*
+   * Calculates the length of a polyline using pythagoras theorem for each line segment
+   *
+   * @param {node} polyline The polyline element to calculate length of
+   * @returns {Number} Length of the polyline
+   */
+  function getPolylineLength(polyline){
+    var dist = 0;
+    for(var i = 1; i < polyline.points.length; i++){
+        var x1 = polyline.points[i-1].x;
+        var x2 = polyline.points[i].x;
+        var y1 = polyline.points[i-1].y;
+        var y2 = polyline.points[i].y;
+        dist += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+    }
+    return dist;
+  }
+
+  /*
    * Calculates the length a line using pythagoras theorem
    *
    * @param {node} line The line element to calculate length of
@@ -302,4 +357,3 @@
 
   return Walkway;
 }));
-
