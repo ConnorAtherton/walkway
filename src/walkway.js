@@ -295,8 +295,7 @@
     var x2 = line.getAttribute('x2');
     var y1 = line.getAttribute('y1');
     var y2 = line.getAttribute('y2');
-    // if (x2 > x1) var tmp = x1; x1 = x2; x2 = tmp;
-    // if (y2 > y1) var tmp = y1; y1 = y2; y2 = tmp;
+
     return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
   }
 
