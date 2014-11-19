@@ -62,35 +62,33 @@
     linear: function (t) { return t; },
     // accelerating from zero velocity
     easeInQuad: function (t) { return t*t; },
-    // decelerating to zero velocity
+      // decelerating to zero velocity
     easeOutQuad: function (t) { return t*(2-t); },
-    // acceleration until halfway, then deceleration
+      // acceleration until halfway, then deceleration
     easeInOutQuad: function (t) { return t<0.5 ? 2*t*t : -1+(4-2*t)*t; },
-    // accelerating from zero velocity
+      // accelerating from zero velocity
     easeInCubic: function (t) { return t*t*t; },
-    // decelerating to zero velocity
+      // decelerating to zero velocity
     easeOutCubic: function (t) { return (--t)*t*t+1; },
-    // acceleration until halfway, then deceleration
+      // acceleration until halfway, then deceleration
     easeInOutCubic: function (t) { return t<0.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1; },
-    // accelerating from zero velocity
+      // accelerating from zero velocity
     easeInQuart: function (t) { return t*t*t*t; },
-    // decelerating to zero velocity
+      // decelerating to zero velocity
     easeOutQuart: function (t) { return 1-(--t)*t*t*t; },
-    // acceleration until halfway, then deceleration
+      // acceleration until halfway, then deceleration
     easeInOutQuart: function (t) { return t<0.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t; },
-    // accelerating from zero velocity
+      // accelerating from zero velocity
     easeInQuint: function (t) { return t*t*t*t*t; },
-    // decelerating to zero velocity
+      // decelerating to zero velocity
     easeOutQuint: function (t) { return 1+(--t)*t*t*t*t; },
-    // acceleration until halfway, then deceleration
+      // acceleration until halfway, then deceleration
     easeInOutQuint: function (t) { return t<0.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t; }
   };
 
   /*
    * Creates a selector used to select all element to animate
    * Currently only supports *path*, *line*, and *polyline* svg elements
-   *
-   * TODO: In the future support more svg elements
    *
    * @param {string} selector The selector of the parent element
    * @returns {string} the complete selector
@@ -212,6 +210,27 @@
   };
 
   /*
+   * This contains the general update logic for all supported svg
+   * elements. It *must* be called using .call or .apply in order
+   * to pass the correct context for the element.
+   *
+   * @returns {boolean} true if the animation is complete, false otherwise
+   */
+
+  function generalUpdate(element) {
+    if (!element.animationStarted) {
+      element.animationStart = Date.now();
+      element.animationStarted = true;
+    }
+
+    var progress = element.easing((Date.now() - element.animationStart) / element.duration);
+    var value = Math.ceil(element.length * (1 - progress));
+    element.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
+
+    return progress >= 1 ? true : false;
+  }
+
+  /*
    * Constructor for new path instance
    *
    * @param {node} path actual dom node of the path
@@ -236,16 +255,7 @@
    */
 
   Path.prototype.update = function() {
-    if (!this.animationStarted) {
-      this.animationStart = Date.now();
-      this.animationStarted = true;
-    }
-
-    var progress = this.easing((Date.now() - this.animationStart) / this.duration);
-    var value = Math.ceil(this.length * (1 - progress));
-    this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
-
-    return progress >= 1 ? true : false;
+    return generalUpdate(this);
   };
 
   /*
@@ -266,8 +276,6 @@
     this.animationStarted = false;
   }
 
-
-
   /*
    * Updates line style until the animation is complete
    *
@@ -275,16 +283,7 @@
    */
 
   Line.prototype.update = function() {
-    if (!this.animationStarted) {
-      this.animationStart = Date.now();
-      this.animationStarted = true;
-    }
-
-    var progress = this.easing((Date.now() - this.animationStart) / this.duration);
-    var value = Math.ceil(this.length * (1 - progress));
-    this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
-
-    return progress >= 1 ? true : false;
+    return generalUpdate(this);
   };
 
   /*
@@ -295,7 +294,8 @@
    * @param {string} easing the type of easing used - default is easeInOutCubic.
    * @returns {polyline}
    */
-   function Polyline(polyline, duration, easing){
+
+  function Polyline(polyline, duration, easing){
     this.el = polyline;
     this.length = getPolylineLength(polyline);
     this.duration = duration;
@@ -303,38 +303,37 @@
     this.animationStart = null;
     this.animationStarted = false;
   }
-    /*
+
+  /*
    * Updates polyline style until the animation is complete
    *
    * @returns {boolean} Returns true if the line animation is finished, false otherwise
    */
+
   Polyline.prototype.update = function(){
-    if (!this.animationStarted) {
-      this.animationStart = Date.now();
-      this.animationStarted = true;
-    }
-    var progress = this.easing((Date.now() - this.animationStart) / this.duration);
-    var value = Math.ceil(this.length * (1 - progress));
-    this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
+    return generalUpdate(this);
+  };
 
-    return progress >= 1 ? true : false;
-  }
-
- /*
+  /*
    * Calculates the length of a polyline using pythagoras theorem for each line segment
    *
    * @param {node} polyline The polyline element to calculate length of
    * @returns {Number} Length of the polyline
    */
-  function getPolylineLength(polyline){
+
+  function getPolylineLength(polyline) {
     var dist = 0;
+    var x1, x2, y1, y2;
+
     for(var i = 1; i < polyline.points.length; i++){
-        var x1 = polyline.points[i-1].x;
-        var x2 = polyline.points[i].x;
-        var y1 = polyline.points[i-1].y;
-        var y2 = polyline.points[i].y;
-        dist += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+      x1 = polyline.points[i - 1].x;
+      x2 = polyline.points[i].x;
+      y1 = polyline.points[i - 1].y;
+      y2 = polyline.points[i].y;
+
+      dist += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
+
     return dist;
   }
 
