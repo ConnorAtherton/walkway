@@ -3,6 +3,8 @@
 I loved the animations [for the polygon ps4 review](http://www.polygon.com/a/ps4-review) a few months back
 and decided to create a small library to re-create them ([simple demo](http://htmlpreview.github.io/?https://github.com/ConnorAtherton/walkway/blob/master/example/index.html)).
 
+It supports `path`, `line` and `polyline` elements.
+
 ## Download
 #### Bower
 ```
@@ -67,18 +69,18 @@ All credit for the built-in easing functions go to [gre](https://github.com/gre)
 
 ### Gotchas
 
-Sometimes when exporting from a program like Illustrator the path and line elements have no stroke style attached to them. This results in confusion when
-Walkway starts the animation and nothing shows up. Just be sure to add base styles (shown below) that can be overwritten inline if needed.
+Sometimes when exporting from a program like Illustrator elements have no stroke style attached to them. This results in confusion when
+Walkway starts the animation and nothing shows up. Just be sure to add base styles that can be overwritten if required.
 
 ```sass
 svg {
-  path, line {
-    stroke: #fff;
-    stroke-width: 2px;
+  path, line, polyline {
+    stroke: #fff
+    stroke-width: 2px
   }
 
   path {
-    fill: transparent;
+    fill: transparent
   }
 }
 ```
