@@ -325,11 +325,11 @@
     var dist = 0;
     var x1, x2, y1, y2;
 
-    for(var i = 1; i < polyline.points.length; i++){
-      x1 = polyline.points[i - 1].x;
-      x2 = polyline.points[i].x;
-      y1 = polyline.points[i - 1].y;
-      y2 = polyline.points[i].y;
+    for(var i = 1; i < polyline.points.numberOfItems; i++){
+      x1 = polyline.points.getItem(i - 1) .x;
+      x2 = polyline.points.getItem(i).x;
+      y1 = polyline.points.getItem(i - 1) .y;
+      y2 = polyline.points.getItem(i).y;
 
       dist += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
