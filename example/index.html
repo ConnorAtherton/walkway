@@ -4,13 +4,41 @@
     <title>Walkway.js Example</title>
     <script src="../src/walkway.js"></script>
     <style>
+      body, html {
+        body: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #f39c12;
+      }
+       svg {
+         width: 33.33%;
+         height: 33.33%;
+         float: left;
+         position: relative;
+       }
+
+       svg > span {
+         position: absolute;
+         top: 0;
+         right: 0;
+       }
+
       path, line, polyline {
-        stroke: red;
+        stroke: #fff;
         stroke-width: 1px;
       }
 
       path {
         fill: transparent;
+      }
+
+      polyline {
+        stroke-width: 4px;
+      }
+
+      #ps4 path {
+        stroke-width: 5px;
       }
     </style>
   </head>
