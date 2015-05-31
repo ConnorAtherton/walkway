@@ -1,0 +1,58 @@
+/*
+colors:
+blue: #54BCEB
+grey: #808080
+*/
+
+
+body, html {
+  body: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #eaeaea;
+}
+
+svg {
+  width: 25%;
+  height: 33.33%;
+  float: left;
+  position: relative;
+ }
+
+svg > span {
+  position: absolute;
+  top: 0;
+  right: 0;
+ }
+
+path, line, polyline {
+  stroke: #808080;
+  stroke-width: 2px;
+}
+
+path {
+  fill: transparent;
+}
+
+polyline {
+  stroke-width: 5px;
+}
+
+#koine-svg path {
+  fill: #54BCEB;
+  stroke-width: 1px;
+}
+
+#koine2-svg path {
+  fill: #808080;
+  stroke: #54BCEB;
+  stroke-width: 2.5px;
+}
+
+svg#koine-svg,
+svg#koine2-svg {
+  padding-left: 20%;
+  padding-top: 2%;
+  transform: scale(2.5);
+}
