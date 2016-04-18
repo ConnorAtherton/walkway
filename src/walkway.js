@@ -114,14 +114,17 @@
    */
 
   function Walkway(opts) {
-    if (!(this instanceof Walkway))
+    if (!(this instanceof Walkway)) {
       return new Walkway(opts);
+    }
 
-    if(typeof opts === 'string')
+    if (typeof opts === 'string') {
       opts = { selector: opts };
+    }
 
-    if (!opts.selector)
+    if (!opts.selector) {
       return this.error('A selector needs to be specified');
+    }
 
     this.opts = opts;
     this.selector = opts.selector;
@@ -160,7 +163,7 @@
         return new Path(el, self.duration, self.easing);
       } else if (el.tagName === 'line') {
         return new Line(el, self.duration, self.easing);
-      } else if(el.tagName === 'polyline'){
+      } else if(el.tagName === 'polyline') {
         return new Polyline(el, self.duration, self.easing);
       }
     });
@@ -202,8 +205,9 @@
       path = this.paths[counter];
       var done = path.update();
 
-      if (done)
+      if (done) {
         this.paths.splice(counter, 1);
+      }
     }
 
     this.id = window.requestAnimationFrame(this.draw.bind(this, callback));
@@ -295,7 +299,7 @@
    * @returns {polyline}
    */
 
-  function Polyline(polyline, duration, easing){
+  function Polyline(polyline, duration, easing) {
     this.el = polyline;
     this.length = getPolylineLength(polyline);
     this.duration = duration;
@@ -310,7 +314,7 @@
    * @returns {boolean} Returns true if the line animation is finished, false otherwise
    */
 
-  Polyline.prototype.update = function(){
+  Polyline.prototype.update = function() {
     return generalUpdate(this);
   };
 
@@ -324,11 +328,13 @@
   function getPolylineLength(polyline) {
     var dist = 0;
     var x1, x2, y1, y2;
+    var i;
+    var points = polyline.points.numberOfItems;
 
-    for(var i = 1; i < polyline.points.numberOfItems; i++){
-      x1 = polyline.points.getItem(i - 1) .x;
+    for (i = 1; i < points; i++){
+      x1 = polyline.points.getItem(i - 1).x;
       x2 = polyline.points.getItem(i).x;
-      y1 = polyline.points.getItem(i - 1) .y;
+      y1 = polyline.points.getItem(i - 1).y;
       y2 = polyline.points.getItem(i).y;
 
       dist += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
