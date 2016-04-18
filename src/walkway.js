@@ -332,9 +332,9 @@
     var points = polyline.points.numberOfItems;
 
     for (i = 1; i < points; i++){
-      x1 = polyline.points.getItem(i - 1) .x;
+      x1 = polyline.points.getItem(i - 1).x;
       x2 = polyline.points.getItem(i).x;
-      y1 = polyline.points.getItem(i - 1) .y;
+      y1 = polyline.points.getItem(i - 1).y;
       y2 = polyline.points.getItem(i).y;
 
       dist += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
