@@ -65,6 +65,13 @@
     <svg version="1.1" id="polyline"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="300px" height="300px" viewBox="0 0 1115 700" enable-background="new 0 0 1115 700" xml:space="preserve">
       <polyline fill="none" stroke="#000000" stroke-width="5" stroke-miterlimit="10" points="594.25,223.5 699.375,249.5 713.438,285.5 739.469,291.5 752.484,316 773.492,320.5 775.746,328 824.5,339 824.5,372 1066.5,428.5 1072.5,456.5 "/>
     </svg>
+    <svg width="120" height="120" id="customEasing" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+      <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+      <g>
+      <title>triangle</title>
+      <path stroke-width="2" stroke="#000000" fill="#DDDDDD" d="m6,106l50,-100l50,100l-100,0z" />
+      </g>
+    </svg>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
 
@@ -105,6 +112,15 @@
         svg5.draw(function() {
           console.log('Finished polyline!');
         });
+
+        var svg6 = new Walkway({
+          selector: '#customEasing',
+          duration: 3000,
+          easing: function(t) {
+            console.log('Custom easing function');
+            return t * t * t;
+          }
+        }).draw();
       });
     </script>
   </body>
