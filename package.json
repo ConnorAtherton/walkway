@@ -1,6 +1,6 @@
 {
   "name": "walkway.js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "An easy way to animate simple svg elements.",
   "main": "src/walkway.js",
   "scripts": {
