@@ -1,3 +1,0 @@
-- Create .coffee version
-- ~~Add gulp for jshint etc~~
-- Add get line length method to the line prototype
