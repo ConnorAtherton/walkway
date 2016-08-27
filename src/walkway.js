@@ -1,11 +1,11 @@
 /*
  * Walkway.js
  *
- * Copyright 2014, Connor Atherton - http://connoratherton.com/
+ * Copyright 2016, Connor Atherton - http://connoratherton.com/
  * Released under the MIT Licence
  * http://opensource.org/licenses/MIT
  *
- * Github:  http://github.com/ConnorAtherton/Walkway
+ * Github: http://github.com/ConnorAtherton/Walkway
  */
 
 // Export Walkway depending on environment (AMD, CommonJS or Browser global)
@@ -105,6 +105,27 @@
   }
 
   /*
+   * All Walkway instances present on the current page. This is needed for when
+   * the tab loses focus and we need to force each animation to finish.
+   */
+  var _elements = [];
+  var _instances = [];
+
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      return;
+    }
+
+    for (var i = 0, instancesLen = _instances.length; i < instancesLen; i++) {
+      _instances[i].cancel();
+    }
+
+    for (var j = 0, elementsLen = _elements.length; j < elementsLen; j++) {
+      _elements[j].complete();
+    }
+  }, false);
+
+  /*
    * Walkway constructor function
    * opts.selector is the only mandatory param and can be passed in alone
    * as a string
@@ -129,113 +150,140 @@
     this.opts = opts;
     this.selector = opts.selector;
     this.duration = opts.duration || 500;
-    this.easing = (typeof opts.easing === 'function')
-      ? opts.easing
-      : EasingFunctions[opts.easing] || EasingFunctions.easeInOutCubic;
+    this.easing = (typeof opts.easing === 'function') ?
+      opts.easing :
+      EasingFunctions[opts.easing] || EasingFunctions.easeInOutCubic;
     this.id = false;
-    this.paths = this.getPaths();
+    this.elements = this.getElements();
 
     this.setInitialStyles();
+
+    _elements = _elements.concat(this.elements);
+    _instances.push(this);
   }
 
-  /*
-   * Prints an error message to the console
-   *
-   * @param {string} message the message to be displayed
-   * @returns {void}
-   */
+  Walkway.prototype = {
+    constructor: Walkway,
 
-  Walkway.prototype.error = function(message) {
-    console.log('Walkway error: ' + message);
-  };
+    /*
+     * Prints an error message to the console
+     *
+     * @param {string} message the message to be displayed
+     * @returns {void}
+     */
+    error: function(message) {
+      console.error('Walkway error: ' + message);
+    },
 
-  /*
-   * Uses a pre-build selector to find and store elements to animate
-   *
-   * @returns {array} of Path instances
-   */
+    /*
+     * Uses a pre-build selector to find and store elements to animate
+     *
+     * @returns {array} of Path instances
+     */
+    getElements: function() {
+      var self = this;
+      var selector = _createSelector(this.selector);
+      var els = document.querySelectorAll(selector);
+      els = Array.prototype.slice.call(els);
 
-  Walkway.prototype.getPaths = function() {
-    var self = this;
-    var selector = _createSelector(this.selector);
-    var els = document.querySelectorAll(selector);
-    els = Array.prototype.slice.call(els);
+      return els.map(function(el) {
+        if(el.tagName === 'path') {
+          return new Path(el, self.duration, self.easing);
+        } else if (el.tagName === 'line') {
+          return new Line(el, self.duration, self.easing);
+        } else if(el.tagName === 'polyline') {
+          return new Polyline(el, self.duration, self.easing);
+        }
+      });
+    },
 
-    return els.map(function(el) {
-      if(el.tagName === 'path') {
-        return new Path(el, self.duration, self.easing);
-      } else if (el.tagName === 'line') {
-        return new Line(el, self.duration, self.easing);
-      } else if(el.tagName === 'polyline') {
-        return new Polyline(el, self.duration, self.easing);
+    /*
+     * Sets initial styles on all elements to be animated
+     *
+     * @returns {void}
+     */
+    setInitialStyles: function() {
+      this.elements.forEach(function(n) {
+        n.el.style.strokeDasharray = n.length + ' ' + n.length;
+        n.el.style.strokeDashoffset = n.length;
+      });
+    },
+
+    /*
+     * The general update loop for the animations.
+     * Once individal paths are finished they are spliced
+     * from the array. Once the array is empty the animation is stopped.
+     *
+     * @returns {void}
+     */
+    draw: function(callback) {
+      var counter = this.elements.length;
+      var path;
+
+      if (counter === 0) {
+        if (callback && typeof(callback) === 'function') {
+          callback();
+        }
+
+        this.cancel();
       }
-    });
-  };
 
-  /*
-   * Sets initial styles on all elements to be animated
-   *
-   * @returns {void}
-   */
+      while (counter--) {
+        path = this.elements[counter];
+        var done = path.update();
 
-  Walkway.prototype.setInitialStyles = function() {
-    this.paths.forEach(function(n) {
-      n.el.style.strokeDasharray = n.length + ' ' + n.length;
-      n.el.style.strokeDashoffset = n.length;
-    });
-  };
-
-  /*
-   * The general update loop for the animations.
-   * Once individal paths are finished they are spliced
-   * from the array. Once the array is empty the animation is stopped.
-   *
-   * @returns {void}
-   */
-
-  Walkway.prototype.draw = function(callback) {
-    var counter = this.paths.length;
-    var path;
-
-    if (counter === 0) {
-      if (callback && typeof(callback) === 'function') {
-        callback();
+        if (done) {
+          this.elements.splice(counter, 1);
+        }
       }
-      return window.cancelAnimationFrame(this.id);
+
+      this.id = window.requestAnimationFrame(this.draw.bind(this, callback));
+    },
+
+    cancel: function() {
+      window.cancelAnimationFrame(this.id);
     }
-
-    while (counter--) {
-      path = this.paths[counter];
-      var done = path.update();
-
-      if (done) {
-        this.paths.splice(counter, 1);
-      }
-    }
-
-    this.id = window.requestAnimationFrame(this.draw.bind(this, callback));
   };
 
-  /*
-   * This contains the general update logic for all supported svg
-   * elements. It *must* be called using .call or .apply in order
-   * to pass the correct context for the element.
-   *
-   * @returns {boolean} true if the animation is complete, false otherwise
-   */
-
-  function generalUpdate(element) {
-    if (!element.animationStarted) {
-      element.animationStart = Date.now();
-      element.animationStarted = true;
-    }
-
-    var progress = element.easing((Date.now() - element.animationStart) / element.duration);
-    var value = Math.ceil(element.length * (1 - progress));
-    element.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
-
-    return progress >= 1 ? true : false;
+  function WalkwayElement(el, duration, easing) {
+    this.el = el;
+    this.duration = duration;
+    this.easing = easing;
+    this.animationStart = null;
+    this.animationStarted = false;
   }
+
+  WalkwayElement.prototype = {
+    constructor: WalkwayElement,
+
+    /*
+     * This contains the general update logic for all supported svg
+     * elements.
+     *
+     * @returns {boolean} true if the animation is complete, false otherwise
+     */
+    update: function() {
+      if (!this.animationStarted) {
+        this.animationStart = Date.now();
+        this.animationStarted = true;
+      }
+
+      var progress = this.easing((Date.now() - this.animationStart) / this.duration);
+
+      this.fill(progress);
+
+      return progress >= 1 ? true : false;
+    },
+
+    fill: function(progress) {
+      var value = Math.ceil(this.length * (1 - progress));
+      this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
+    },
+
+    complete: function() {
+      this.fill(1);
+    }
+  };
 
   /*
    * Constructor for new path instance
@@ -247,23 +295,10 @@
    */
 
   function Path(path, duration, easing) {
-    this.el = path;
-    this.length = path.getTotalLength(); // total length of the path
-    this.duration = duration;
-    this.easing = easing;
-    this.animationStart = null;
-    this.animationStarted = false;
+    WalkwayElement.call(this, path, duration, easing);
+
+    this.length = path.getTotalLength();
   }
-
-  /*
-   * Updates path style until the animation is complete
-   *
-   * @returns {boolean} Returns true if the path animation is finished, false otherwise
-   */
-
-  Path.prototype.update = function() {
-    return generalUpdate(this);
-  };
 
   /*
    * Constructor for new Line instance
@@ -275,23 +310,10 @@
    */
 
   function Line(line, duration, easing) {
-    this.el = line;
+    WalkwayElement.call(this, line, duration, easing);
+
     this.length = getLineLength(line);
-    this.duration = duration;
-    this.easing = easing;
-    this.animationStart = null;
-    this.animationStarted = false;
   }
-
-  /*
-   * Updates line style until the animation is complete
-   *
-   * @returns {boolean} Returns true if the line animation is finished, false otherwise
-   */
-
-  Line.prototype.update = function() {
-    return generalUpdate(this);
-  };
 
   /*
    * Constructor for new Polyline instance
@@ -301,25 +323,13 @@
    * @param {string} easing the type of easing used - default is easeInOutCubic.
    * @returns {polyline}
    */
-
   function Polyline(polyline, duration, easing) {
-    this.el = polyline;
+    WalkwayElement.call(this, polyline, duration, easing);
+
     this.length = getPolylineLength(polyline);
-    this.duration = duration;
-    this.easing = easing;
-    this.animationStart = null;
-    this.animationStarted = false;
   }
 
-  /*
-   * Updates polyline style until the animation is complete
-   *
-   * @returns {boolean} Returns true if the line animation is finished, false otherwise
-   */
-
-  Polyline.prototype.update = function() {
-    return generalUpdate(this);
-  };
+  Path.prototype = Line.prototype = Polyline.prototype = Object.create(WalkwayElement.prototype);
 
   /*
    * Calculates the length of a polyline using pythagoras theorem for each line segment
