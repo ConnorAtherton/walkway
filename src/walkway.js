@@ -155,6 +155,7 @@
       EasingFunctions[opts.easing] || EasingFunctions.easeInOutCubic;
     this.id = false;
     this.elements = this.getElements();
+    this.callback = opts.callback;
 
     this.setInitialStyles();
 
@@ -211,29 +212,35 @@
 
     /*
      * The general update loop for the animations.
-     * Once individal paths are finished they are spliced
-     * from the array. Once the array is empty the animation is stopped.
+     * Once individal paths are completed they are marked as such and
+     * are not updated.
      *
      * @returns {void}
      */
     draw: function(callback) {
       var counter = this.elements.length;
-      var path;
+      var allComplete = this.elements.filter(function(el) { return el.done; }).length === counter;
+      var element = null;
+      var done = false;
 
-      if (counter === 0) {
-        if (callback && typeof(callback) === 'function') {
-          callback();
+      // Overwrite existing callback passed in with options
+      this.callback = callback || this.callback;
+
+      if (allComplete) {
+        if (this.callback && typeof(this.callback) === 'function') {
+          this.callback();
         }
 
         this.cancel();
+        return;
       }
 
       while (counter--) {
-        path = this.elements[counter];
-        var done = path.update();
+        element = this.elements[counter];
+        done = element.update();
 
         if (done) {
-          this.elements.splice(counter, 1);
+          element.done = true;
         }
       }
 
@@ -242,6 +249,16 @@
 
     cancel: function() {
       window.cancelAnimationFrame(this.id);
+    },
+
+    redraw: function() {
+      this.cancel();
+
+      this.elements.forEach(function(element) {
+        element.reset();
+      });
+
+      this.draw();
     }
   };
 
@@ -282,6 +299,13 @@
 
     complete: function() {
       this.fill(1);
+    },
+
+    reset: function() {
+      this.done = false;
+      this.animationStart = 0;
+      this.animationStarted = false;
+      this.fill(0);
     }
   };
 

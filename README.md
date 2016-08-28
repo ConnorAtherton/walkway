@@ -57,6 +57,18 @@ svg.draw(function() {
 });
 ```
 
+All animations will automatically complete when the window containing them loses focus, to another
+tab, for example. You can also choose to restart all animations in an event handler. To restart
+every animation when the window gains focus again, you can do:
+
+```
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) {
+    svg.redraw();
+  }
+}, false);
+```
+
 ### Options
 
 - **selector** (*mandatory*) - The selector of the parent element (usually will be a specific svg element)

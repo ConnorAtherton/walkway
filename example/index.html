@@ -78,7 +78,7 @@
         var svg = new Walkway('#triangle');
 
         svg.draw(function() {
-          console.dir('Finished triangle!');
+          console.log('Finished triangle!');
         });
 
         var svg2 = new Walkway({
@@ -102,7 +102,9 @@
         var svg4 = new Walkway({
           selector: '#ps4',
           duration: 3500
-        }).draw();
+        });
+
+        svg4.draw();
 
         var svg5 = new Walkway({
           selector: '#polyline',
@@ -120,6 +122,11 @@
             return t * t * t;
           }
         }).draw();
+
+        document.addEventListener('dblclick', function() {
+          svg.redraw();
+          svg4.redraw();
+        }, false);
       });
     </script>
   </body>
