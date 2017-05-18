@@ -23,6 +23,22 @@
 }(this, function factory(exports) {
   'use strict';
 
+  
+  (function () {
+    if ( typeof window.CustomEvent === "function" ) return false;
+  
+    function CustomEvent ( event, params ) {
+      params = params || { bubbles: false, cancelable: false, detail: undefined };
+      var evt = document.createEvent( 'CustomEvent' );
+      evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+      return evt;
+     }
+  
+    CustomEvent.prototype = window.Event.prototype;
+  
+    window.CustomEvent = CustomEvent;
+  })();
+
   /*
    * Shim for requestAnimationFrame on older browsers
    */
@@ -108,22 +124,35 @@
    * All Walkway instances present on the current page. This is needed for when
    * the tab loses focus and we need to force each animation to finish.
    */
-  var _elements = [];
   var _instances = [];
-
-  document.addEventListener('visibilitychange', function() {
+  
+  function visChange() {
     if (!document.hidden) {
       return;
     }
 
     for (var i = 0, instancesLen = _instances.length; i < instancesLen; i++) {
-      _instances[i].cancel();
+      if (_instances[i].id) {
+        var counter = _instances[i].elements.length;
+        var allComplete = _instances[i].elements.every(function(el) {return el.animationPaused === true || el.done === true;});
+        if(!allComplete){
+           _instances[i].cancel();
+          for (var j = 0, elementsLen = counter; j < elementsLen; j++) {
+            if (_instances[i].elements[j].animationStarted && !_instances[i].elements[j].done) {
+              _instances[i].elements[j].complete();
+            }
+          }
+          if(_instances[i].callback && typeof(_instances[i].callback) === 'function') {
+            _instances[i].callback();
+            var event = new CustomEvent('complete');
+            document.querySelector(_instances[i].selector).dispatchEvent(event);
+          }
+        }
+      }
     }
+  }
 
-    for (var j = 0, elementsLen = _elements.length; j < elementsLen; j++) {
-      _elements[j].complete();
-    }
-  }, false);
+  document.addEventListener('visibilitychange', visChange, false);
 
   /*
    * Walkway constructor function
@@ -149,6 +178,7 @@
 
     this.opts = opts;
     this.selector = opts.selector;
+    this.reverse = opts.reverse || false;
     this.duration = opts.duration || 500;
     this.easing = (typeof opts.easing === 'function') ?
       opts.easing :
@@ -159,7 +189,6 @@
 
     this.setInitialStyles();
 
-    _elements = _elements.concat(this.elements);
     _instances.push(this);
   }
 
@@ -189,11 +218,11 @@
 
       return els.map(function(el) {
         if(el.tagName === 'path') {
-          return new Path(el, self.duration, self.easing);
+          return new Path(el, self.duration, self.easing, self.reverse);
         } else if (el.tagName === 'line') {
-          return new Line(el, self.duration, self.easing);
+          return new Line(el, self.duration, self.easing, self.reverse);
         } else if(el.tagName === 'polyline') {
-          return new Polyline(el, self.duration, self.easing);
+          return new Polyline(el, self.duration, self.easing, self.reverse);
         }
       });
     },
@@ -218,8 +247,12 @@
      * @returns {void}
      */
     draw: function(callback) {
+      
+      var event = new CustomEvent('draw');
+      document.querySelector(this.selector).dispatchEvent(event);
+
       var counter = this.elements.length;
-      var allComplete = this.elements.filter(function(el) { return el.done; }).length === counter;
+      var allComplete = this.elements.every(function(el) {return el.done === true;});
       var element = null;
       var done = false;
 
@@ -230,6 +263,9 @@
         if (this.callback && typeof(this.callback) === 'function') {
           this.callback();
         }
+
+        var event = new CustomEvent('complete');
+        document.querySelector(this.selector).dispatchEvent(event);
 
         this.cancel();
         return;
@@ -247,27 +283,125 @@
       this.id = window.requestAnimationFrame(this.draw.bind(this, callback));
     },
 
+    timetravel: function(time = 0) {
+      var event = new CustomEvent('timetravel');
+      document.querySelector(this.selector).dispatchEvent(event);
+
+      var counter = this.elements.length;
+      var element = null;
+
+      while (counter--) {
+        element = this.elements[counter];
+        //element.reset();
+        element.timetravel(time);
+      }
+    },
+
+    pause: function() {
+      window.cancelAnimationFrame(this.id);
+      this.elements.filter(function(el){return el.animationStarted;}).forEach(function(element) {
+        element.animationStarted = false;
+        element.animationPaused = true;
+      });
+      var event = new CustomEvent('pause');
+      document.querySelector(this.selector).dispatchEvent(event);
+    },
+
+    revert: function() {
+      this.cancel(this.id);
+      this.id = false;
+      var reverted;
+      this.elements.forEach(function(element) {
+        element.reverse = !element.reverse;
+        if(reverted === undefined){
+          reverted = !element.reverse;
+        }
+        element.reset();
+      });
+      var event = new CustomEvent('revert', {
+        detail: {
+          reverted: reverted
+        }
+      });
+      document.querySelector(this.selector).dispatchEvent(event);
+    },
+
     cancel: function() {
       window.cancelAnimationFrame(this.id);
+      this.id = false;
+      var event = new CustomEvent('cancel');
+      document.querySelector(this.selector).dispatchEvent(event);
     },
 
     redraw: function() {
       this.cancel();
 
-      this.elements.forEach(function(element) {
+      this.elements.filter(function(el){return el.animationStarted || el.animationPaused || el.done;}).forEach(function(element) {
         element.reset();
       });
 
+      var event = new CustomEvent('redraw');
+      document.querySelector(this.selector).dispatchEvent(event);
+
       this.draw();
+    },
+
+    progress: function(progress) {
+      //this.cancel();
+
+      this.elements.filter(function(el){return el.animationStarted || el.animationPaused || el.done;}).forEach(function(element) {
+        element.animationStart = Date.now();
+        element.animationStarted = false;
+        element.animationPaused = true;
+        element.done = progress >= 1.0;
+        element.lastAnimationTime = Date.now();
+        element.fill(progress);
+      });
+
+      var event = new CustomEvent('progress', {
+        detail: {
+          progress: progress
+        }
+      });
+      document.querySelector(this.selector).dispatchEvent(event);
+    },
+
+    reset: function() {
+      this.cancel();
+
+      this.elements.filter(function(el){return el.animationStarted || el.animationPaused || el.done;}).forEach(function(element) {
+        element.reset();
+      });
+
+      var event = new CustomEvent('reset', {
+        detail: {
+          progress: progress
+        }
+      });
+      document.querySelector(this.selector).dispatchEvent(event);
+    },
+
+    clear: function() {
+      for (var i = 0, instancesLen = _instances.length; i < instancesLen; i++) {
+        if(_instances[i].selector === this.selector){
+          _instances.splice(i,1);
+          var event = new CustomEvent('clear');
+          document.querySelector(this.selector).dispatchEvent(event);
+          return;
+        }
+      }
     }
   };
 
-  function WalkwayElement(el, duration, easing) {
+  function WalkwayElement(el, duration, easing, reverse) {
     this.el = el;
     this.duration = duration;
     this.easing = easing;
     this.animationStart = null;
     this.animationStarted = false;
+    this.reverse = reverse;
+    this.animationPaused = false;
+    this.lastAnimationTime = null;
   }
 
   WalkwayElement.prototype = {
@@ -281,30 +415,57 @@
      */
     update: function() {
       if (!this.animationStarted) {
-        this.animationStart = Date.now();
+        this.animationStart = (this.lastAnimationTime) ? (Date.now()-(this.lastAnimationTime - this.animationStart )) : Date.now();
         this.animationStarted = true;
+        this.animationPaused = false;
       }
 
       var progress = this.easing((Date.now() - this.animationStart) / this.duration);
+      this.lastAnimationTime = Date.now();
 
       this.fill(progress);
 
       return progress >= 1 ? true : false;
     },
 
+    timetravel: function(time) {
+      this.animationStart = Date.now()-time;
+      this.animationStarted = false;
+      this.animationPaused = true;
+      this.done = !(time < this.duration);
+
+      var progress = this.easing((Date.now() - this.animationStart) / this.duration);
+      this.lastAnimationTime = Date.now();
+
+      this.fill(progress);
+    },
+
     fill: function(progress) {
+      if (this.reverse) {
+        progress = 1-progress;
+      }
       var value = Math.ceil(this.length * (1 - progress));
       this.el.style.strokeDashoffset = value < 0 ? 0 : Math.abs(value);
+
+      var event = new CustomEvent('fill', {
+        detail: {
+          progress: progress
+        }
+      });
+      this.el.dispatchEvent(event);
     },
 
     complete: function() {
       this.fill(1);
+      this.done = true;
     },
 
     reset: function() {
       this.done = false;
       this.animationStart = 0;
       this.animationStarted = false;
+      this.animationPaused = false;
+      this.lastAnimationTime = null;
       this.fill(0);
     }
   };
@@ -318,8 +479,8 @@
    * @returns {Path}
    */
 
-  function Path(path, duration, easing) {
-    WalkwayElement.call(this, path, duration, easing);
+  function Path(path, duration, easing, reverse) {
+    WalkwayElement.call(this, path, duration, easing, reverse);
 
     this.length = path.getTotalLength();
   }
@@ -333,8 +494,8 @@
    * @returns {line}
    */
 
-  function Line(line, duration, easing) {
-    WalkwayElement.call(this, line, duration, easing);
+  function Line(line, duration, easing, reverse) {
+    WalkwayElement.call(this, line, duration, easing, reverse);
 
     this.length = getLineLength(line);
   }
@@ -347,8 +508,8 @@
    * @param {string} easing the type of easing used - default is easeInOutCubic.
    * @returns {polyline}
    */
-  function Polyline(polyline, duration, easing) {
-    WalkwayElement.call(this, polyline, duration, easing);
+  function Polyline(polyline, duration, easing, reverse) {
+    WalkwayElement.call(this, polyline, duration, easing, reverse);
 
     this.length = getPolylineLength(polyline);
   }
@@ -394,6 +555,38 @@
     var y2 = line.getAttribute('y2');
 
     return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+  }
+  
+  Walkway.resetAll = function () {
+    for (var i = 0, instancesLen = _instances.length; i < instancesLen; i++) {
+      if(_instances[i].id){
+        _instances[i].cancel();
+        _instances[i].id = false;
+        var counter = _instances[i].elements.length;
+        for (var j = 0, elementsLen = counter; j < elementsLen; j++) {
+          console.log(_instances[i].elements[j]);
+          if (_instances[i].elements[j].animationStarted) {
+            _instances[i].elements.filter(function(el){return el.animationStarted || el.done;}).forEach(function(element) {
+              element.reset();
+            });
+          }
+        }
+      }
+    }
+
+    var event = new CustomEvent('resetAll', {
+      detail: {
+        progress: progress
+      }
+    });
+    document.dispatchEvent(event);
+  }
+
+  Walkway.clearAll = function () {
+    document.removeEventListener('visibilitychange', visChange, false);
+    _instances = null;
+    var event = new CustomEvent('clearAll');
+    document.dispatchEvent(event);
   }
 
   return Walkway;
