@@ -18,7 +18,7 @@ npm install walkway.js
 
 #### CDN
 ```
-http://cdn.jsdelivr.net/walkway/0.0.7/walkway.min.js
+https://cdn.jsdelivr.net/npm/walkway.js@0.0.6/src/walkway.min.js
 ```
 
 ## How to use
