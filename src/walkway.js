@@ -187,9 +187,16 @@
       var els = document.querySelectorAll(selector);
       els = Array.prototype.slice.call(els);
 
+      var svg = els[0].closest('svg');
+      var scale = 1;
+      var viewBox = svg && svg.viewBox;
+      if (viewBox) {
+        scale = svg.getBoundingClientRect().height / viewBox.baseVal.height;
+      }
+
       return els.map(function(el) {
         if(el.tagName === 'path') {
-          return new Path(el, self.duration, self.easing);
+          return new Path(el, scale, self.duration, self.easing);
         } else if (el.tagName === 'line') {
           return new Line(el, self.duration, self.easing);
         } else if(el.tagName === 'polyline') {
@@ -313,15 +320,16 @@
    * Constructor for new path instance
    *
    * @param {node} path actual dom node of the path
+   * @param {Number} scaling of the svg on the page relative to its viewbox
    * @param {string} duration how long the animation should take to complete
    * @param {string} easing the type of easing used - default is easeInOutCubic.
    * @returns {Path}
    */
 
-  function Path(path, duration, easing) {
+  function Path(path, scale, duration, easing) {
     WalkwayElement.call(this, path, duration, easing);
 
-    this.length = path.getTotalLength();
+    this.length = path.getTotalLength() * scale;
   }
 
   /*
