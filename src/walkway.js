@@ -321,7 +321,7 @@
   function Path(path, duration, easing) {
     WalkwayElement.call(this, path, duration, easing);
 
-    this.length = path.getTotalLength();
+    this.length = path.getTotalLength() * getElementScale(path);
   }
 
   /*
@@ -363,10 +363,11 @@
    */
 
   function getPolylineLength(polyline) {
-    var dist = 0;
+    var length = 0;
     var x1, x2, y1, y2;
     var i;
     var points = polyline.points.numberOfItems;
+    var scale = getElementScale(polyline);
 
     for (i = 1; i < points; i++){
       x1 = polyline.points.getItem(i - 1).x;
@@ -374,10 +375,10 @@
       y1 = polyline.points.getItem(i - 1).y;
       y2 = polyline.points.getItem(i).y;
 
-      dist += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+      length += Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
 
-    return dist;
+    return length * scale;
   }
 
   /*
@@ -393,7 +394,29 @@
     var y1 = line.getAttribute('y1');
     var y2 = line.getAttribute('y2');
 
-    return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+    var length = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+    var scale = getElementScale(line);
+
+    return length * scale;
+  }
+
+  /*
+   * Calculates the relative scaling of an element based on the
+   * viewbox of the containing svg, if it exists
+   *
+   * @param {node} element The dom node to get the scale of
+   * @returns {Number} The relative scale of the element on the page
+   */
+
+  function getElementScale(element) {
+    var svg = element.closest('svg');
+    var viewBox = svg && svg.viewBox;
+
+    if (viewBox) {
+      return svg.getBoundingClientRect().height / viewBox.baseVal.height;
+    } else {
+      return 1;
+    }
   }
 
   return Walkway;
