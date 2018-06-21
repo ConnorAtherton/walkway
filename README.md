@@ -10,7 +10,7 @@ It supports `path`, `line` and `polyline` elements.
 
 #### yarn
 ```
-yarn install walkway.js
+yarn add walkway.js
 ```
 
 #### Bower
