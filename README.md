@@ -6,7 +6,6 @@ and decided to create a small library to re-create them ([simple demo](http://ht
 It supports `path`, `line` and `polyline` elements.
 
 ## Download
-```
 
 #### yarn
 ```
