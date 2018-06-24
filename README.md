@@ -13,11 +13,6 @@ It supports `path`, `line` and `polyline` elements.
 yarn add walkway.js
 ```
 
-#### Bower
-```
-bower install walkway.js
-```
-
 #### npm
 ```
 npm install walkway.js
