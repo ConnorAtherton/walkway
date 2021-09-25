@@ -150,6 +150,7 @@
     this.opts = opts;
     this.selector = opts.selector;
     this.duration = opts.duration || 500;
+    this.scrollPosition = !opts.scrollPosition ? -1 : opts.scrollPosition;
     this.easing = (typeof opts.easing === 'function') ?
       opts.easing :
       EasingFunctions[opts.easing] || EasingFunctions.easeInOutCubic;
@@ -189,11 +190,11 @@
 
       return els.map(function(el) {
         if(el.tagName === 'path') {
-          return new Path(el, self.duration, self.easing);
+          return new Path(el, self.duration, self.scrollPosition, self.easing);
         } else if (el.tagName === 'line') {
-          return new Line(el, self.duration, self.easing);
+          return new Line(el, self.duration, self.scrollPosition, self.easing);
         } else if(el.tagName === 'polyline') {
-          return new Polyline(el, self.duration, self.easing);
+          return new Polyline(el, self.duration, self.scrollPosition, self.easing);
         }
       });
     },
@@ -239,7 +240,7 @@
         element = this.elements[counter];
         done = element.update();
 
-        if (done) {
+        if (element.scrollPosition === -1 && done) {
           element.done = true;
         }
       }
@@ -262,9 +263,10 @@
     }
   };
 
-  function WalkwayElement(el, duration, easing) {
+  function WalkwayElement(el, duration, scrollPosition, easing) {
     this.el = el;
     this.duration = duration;
+    this.scrollPosition = !scrollPosition ? -1 : scrollPosition;
     this.easing = easing;
     this.animationStart = null;
     this.animationStarted = false;
@@ -285,11 +287,11 @@
         this.animationStarted = true;
       }
 
-      var progress = this.easing((Date.now() - this.animationStart) / this.duration);
+      var progress = this.scrollPosition !== -1 ? window.scrollY / this.scrollPosition : this.easing((Date.now() - this.animationStart) / this.duration);
 
       this.fill(progress);
 
-      return progress >= 1 ? true : false;
+      return progress >= 1;
     },
 
     fill: function(progress) {
@@ -318,8 +320,8 @@
    * @returns {Path}
    */
 
-  function Path(path, duration, easing) {
-    WalkwayElement.call(this, path, duration, easing);
+  function Path(path, duration, scrollPosition, easing) {
+    WalkwayElement.call(this, path, duration, scrollPosition, easing);
 
     this.length = path.getTotalLength();
   }
@@ -333,8 +335,8 @@
    * @returns {line}
    */
 
-  function Line(line, duration, easing) {
-    WalkwayElement.call(this, line, duration, easing);
+  function Line(line, duration, scrollPosition, easing) {
+    WalkwayElement.call(this, line, duration, scrollPosition, easing);
 
     this.length = getLineLength(line);
   }
@@ -347,8 +349,8 @@
    * @param {string} easing the type of easing used - default is easeInOutCubic.
    * @returns {polyline}
    */
-  function Polyline(polyline, duration, easing) {
-    WalkwayElement.call(this, polyline, duration, easing);
+  function Polyline(polyline, duration, scrollPosition, easing) {
+    WalkwayElement.call(this, polyline, duration, scrollPosition, easing);
 
     this.length = getPolylineLength(polyline);
   }

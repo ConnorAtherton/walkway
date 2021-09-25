@@ -9,6 +9,7 @@
         padding: 0;
         width: 100%;
         height: 100%;
+        min-height: 1000px;
         background-color: #f39c12;
       }
        svg {
@@ -44,14 +45,12 @@
   </head>
   <body>
     <svg width="120" height="120" id="triangle" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-      <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
       <g>
       <title>triangle</title>
       <path stroke-width="2" stroke="#000000" fill="#DDDDDD" d="m6,106l50,-100l50,100l-100,0z" />
       </g>
     </svg>
     <svg width="105" height="105" id="diamond" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-      <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
       <g>
       <title>Layer 1</title>
       <path d="m5,55l50,-50l50,50l-50,50l-50,-50z" fill="none" stroke="#000000" stroke-width="2" fill="#000000"/>
@@ -66,7 +65,6 @@
       <polyline fill="none" stroke="#000000" stroke-width="5" stroke-miterlimit="10" points="594.25,223.5 699.375,249.5 713.438,285.5 739.469,291.5 752.484,316 773.492,320.5 775.746,328 824.5,339 824.5,372 1066.5,428.5 1072.5,456.5 "/>
     </svg>
     <svg width="120" height="120" id="customEasing" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-      <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
       <g>
       <title>triangle</title>
       <path stroke-width="2" stroke="#000000" fill="#DDDDDD" d="m6,106l50,-100l50,100l-100,0z" />
@@ -83,7 +81,7 @@
 
         var svg2 = new Walkway({
           selector: '#diamond',
-          duration: 2500,
+          scrollPosition: 20,
           easing: 'linear'
         }).draw(function() {
           console.dir('Finished diamond!');
@@ -91,7 +89,7 @@
 
         var svg3 = new Walkway({
           selector: '#tester',
-          duration: 5000,
+          scrollPosition: 50,
           easing: 'linear'
         });
 
@@ -101,14 +99,14 @@
 
         var svg4 = new Walkway({
           selector: '#ps4',
-          duration: 3500
+          scrollPosition: 200
         });
 
         svg4.draw();
 
         var svg5 = new Walkway({
           selector: '#polyline',
-          duration: 3000
+          scrollPosition: 150
         });
 
         svg5.draw(function() {
@@ -117,7 +115,7 @@
 
         var svg6 = new Walkway({
           selector: '#customEasing',
-          duration: 3000,
+          scrollPosition: 150,
           easing: function(t) {
             return t * t * t;
           }
