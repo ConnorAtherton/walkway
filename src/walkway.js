@@ -150,7 +150,7 @@
     this.opts = opts;
     this.selector = opts.selector;
     this.duration = opts.duration || 500;
-    this.scrollPosition = !opts.scrollPosition ? -1 : opts.scrollPosition;
+    this.scrollPosition = opts.scrollPosition || -1;
     this.easing = (typeof opts.easing === 'function') ?
       opts.easing :
       EasingFunctions[opts.easing] || EasingFunctions.easeInOutCubic;
