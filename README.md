@@ -49,6 +49,13 @@ var svg = new Walkway({
 
 svg.draw();
 
+var svgOnScroll = new Walkway({
+  selector: '#scroll',
+  // Scroll position at which the svg paths should be fully drawn
+  scrollPosition: 150
+}).draw();
+
+svgScroll.draw();
 // If you don't want to change the default options you can
 // also supply the constructor with a selector string.
 var svg = new Walkway('#test');
@@ -75,6 +82,7 @@ document.addEventListener('visibilitychange', function() {
 - **selector** (*mandatory*) - The selector of the parent element (usually will be a specific svg element)
 - **duration** - Time the animation should run for, in ms. Default is 400.
 - **easing** - Name of the easing function used for drawing. Default is 'easeInOutCubic'. You can also supply your own function that will be passed the progress and should return a value in the range of [0, 1];
+- **scrollPosition** - Scroll position (in pixels) at which the animation should be completely drawn. ***Overrides any options for duration***
 
 ### Easing
 
