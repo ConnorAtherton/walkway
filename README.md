@@ -62,7 +62,7 @@ All animations will automatically complete when the window containing them loses
 tab, for example. You can also choose to restart all animations in an event handler. To restart
 every animation when the window gains focus again, you can do:
 
-```
+``` javascript
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden) {
     svg.redraw();
